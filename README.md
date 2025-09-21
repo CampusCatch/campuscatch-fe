@@ -1,69 +1,38 @@
-# React + TypeScript + Vite
+# CampusCatch Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+세종대학교 캠퍼스 정보 통합 관리 서비스 **CampusCatch**의 프론트엔드 레포지토리입니다.  
+Vite + React + TypeScript + Tailwind CSS를 기반으로 개발합니다.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# 의존성 설치
+npm install
 
-## Expanding the ESLint configuration
+# 개발 서버 실행
+npm run dev
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 프로덕션 빌드
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Project Structure (초기)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+src/
+  assets/         # 이미지, 아이콘 등 정적 리소스
+  components/     # 재사용 가능한 UI 컴포넌트
+  hooks/          # 커스텀 훅
+  layouts/        # 공통 레이아웃 (헤더/푸터 등)
+  pages/          # 라우팅 단위 페이지
+  styles/         # 전역 스타일 (Tailwind entry)
+  utils/          # 유틸 함수, 상수
 ```
+
+## Tech Stack
+
+- Build Tool: Vite
+
+- Frontend: React, TypeScript
+
+- Styling: Tailwind CSS
