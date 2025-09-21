@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies & build
+node_modules/
+dist/
+dist-ssr/
+
+# Local env & secrets
+.env*
+!.env.example
+
+# Vite / tooling caches
+.vite/
+.eslintcache
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Optional: test outputs (추후 테스트 도입 시 유용)
+coverage/
+
+# Optional: package artifacts
+*.tgz
