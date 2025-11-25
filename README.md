@@ -1,7 +1,7 @@
 # CampusCatch Frontend
 
-세종대학교 캠퍼스 정보 통합 관리 서비스 **CampusCatch**의 프론트엔드 레포지토리입니다.  
-Vite + React + TypeScript + Tailwind CSS를 기반으로 개발합니다.
+가족 아카이빙 서비스 **CampusCatch**의 프론트엔드 레포지토리입니다.
+Vite + React + JavaScript + Tailwind CSS를 기반으로 개발합니다.
 
 ## Getting Started
 
@@ -33,6 +33,6 @@ src/
 
 - Build Tool: Vite
 
-- Frontend: React, TypeScript
+- Frontend: React, JavaScript
 
-- Styling: Tailwind CSS
+- Styling: Tailwind CSS v4 (configless)

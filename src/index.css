@@ -1,0 +1,29 @@
+/* Tailwind v4 기본 */
+@import "tailwindcss";
+
+/* Pretendard 폰트만 공통으로 사용 */
+@import "pretendard/dist/web/static/pretendard.css";
+
+@theme {
+  /* 기본 본문 폰트 */
+  --font-sans: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+/* 앱 전체 높이 확보 */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* 기본 바디 스타일 */
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  overscroll-behavior: none; /* 튕김 방지(원하면 지워도 됨) */
+  touch-action: pan-y; /* 세로 스크롤만 기본 허용 */
+}
+
+/* 서비스 공통 커스텀 스타일은 여기 아래부터 추가해서 사용하면 됨 */
+/* 예: @layer utilities / @layer components 등 */
