@@ -1,6 +1,6 @@
 import TextInput from "../TextInput";
 import Button from "../Button";
-import ToggleSwitch from "../ToggleSwitch";
+import ToggleSwitch from "./ToggleSwitch";
 
 export default function SettingsCard({
   name,

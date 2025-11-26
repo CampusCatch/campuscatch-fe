@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchInput from "../components/SearchInput";
+import SearchInput from "../components/homepage/SearchInput";
 
 export default function Header({ isSidebarCollapsed, onToggleSidebar }) {
   const [keyword, setKeyword] = useState("");
