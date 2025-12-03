@@ -14,8 +14,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "mix-1",
     title: "중간고사 기간 (내 일정)",
-    startDate: "2025. 09. 15.",
-    endDate: "2025. 09. 19.",
+    startDate: "2025. 11. 15.",
+    endDate: "2025. 11. 19.",
     categories: ["학사", "MY"],
     memo: "전공 과목 위주로 정리",
     description:
@@ -25,8 +25,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "mix-2",
     title: "IT 직무 취업설명회 (참가 신청)",
-    startDate: "2025. 9. 15.",
-    endDate: "2025. 10. 03.",
+    startDate: "2025. 12. 15.",
+    endDate: "2026. 01. 03.",
     categories: ["취업", "MY"],
     memo: "포트폴리오 지참",
     description:
@@ -38,8 +38,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "acad-1",
     title: "1학기 개강",
-    startDate: "2025. 09. 02.",
-    endDate: "2025. 09. 15.",
+    startDate: "2025. 12. 02.",
+    endDate: "2025. 12. 15.",
     categories: ["학사"],
     memo: "",
     description:
@@ -49,8 +49,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "acad-2",
     title: "수강신청 정정 마감",
-    startDate: "2025. 09. 15.",
-    endDate: "2025. 09. 15.",
+    startDate: "2025. 12. 15.",
+    endDate: "2025. 12. 15.",
     categories: ["학사"],
     memo: "",
     description:
@@ -62,8 +62,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "scholar-1",
     title: "성적우수 장학금 신청 마감",
-    startDate: "2025. 10. 10.",
-    endDate: "2025. 10. 10.",
+    startDate: "2025. 11. 10.",
+    endDate: "2025. 11. 10.",
     categories: ["장학"],
     memo: "성적 증명서 준비",
     description:
@@ -73,8 +73,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "scholar-2",
     title: "국가장학금 2차 신청",
-    startDate: "2025. 9. 15.",
-    endDate: "2025. 10. 10.",
+    startDate: "2026. 01. 15.",
+    endDate: "2026. 01. 20.",
     categories: ["장학"],
     memo: "",
     description:
@@ -86,8 +86,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "career-1",
     title: "하반기 공채 대비 특강",
-    startDate: "2025. 11. 25.",
-    endDate: "2025. 11. 26.",
+    startDate: "2025. 12. 25.",
+    endDate: "2025. 12. 26.",
     categories: ["취업"],
     memo: "",
     description:
@@ -97,8 +97,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "career-2",
     title: "캠퍼스 리크루팅 박람회",
-    startDate: "2025. 10. 05.",
-    endDate: "2025. 10. 05.",
+    startDate: "2025. 12. 05.",
+    endDate: "2025. 12. 05.",
     categories: ["취업"],
     memo: "",
     description:
@@ -158,8 +158,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "my-1",
     title: "개인 프로젝트 데모",
-    startDate: "2025. 09. 01.",
-    endDate: "2025. 09. 01.",
+    startDate: "2026. 01. 01.",
+    endDate: "2026. 01. 01.",
     categories: ["MY"],
     memo: "캡스톤 팀 공유",
     description:
@@ -169,8 +169,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "my-2",
     title: "스터디 모임",
-    startDate: "2025. 10. 08.",
-    endDate: "2025. 10. 08.",
+    startDate: "2025. 11. 08.",
+    endDate: "2025. 11. 08.",
     categories: ["MY"],
     memo: "",
     description:
@@ -179,5 +179,5 @@ export const MOCK_SCHEDULES = [
   },
 ];
 
-// 관심 일정(관심 일정 등록 페이지에서 사용할 기본 선택값) 목데이터
-export const MOCK_INTEREST_SCHEDULE_IDS = ["mix-1", "scholar-1", "career-2"];
+// 관심 일정 ID 목록 (혼합 카테고리)?
+export const MOCK_INTEREST_SCHEDULE_IDS = ["mix-1", "mix-2"];
