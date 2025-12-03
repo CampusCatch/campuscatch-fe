@@ -1,7 +1,5 @@
-import { createContext, useEffect, useMemo, useState } from "react";
-import { MOCK_INTEREST_SCHEDULE_IDS } from "@/mocks/scheduleMocks";
-
-const InterestScheduleContext = createContext(null);
+import { useEffect, useState } from "react";
+import { InterestScheduleContext } from "./InterestScheduleContext";
 
 export function InterestScheduleProvider({ children }) {
   // 최초 값: localStorage → 없으면 mock → 없으면 빈 배열
@@ -16,7 +14,8 @@ export function InterestScheduleProvider({ children }) {
         }
       }
     }
-    return MOCK_INTEREST_SCHEDULE_IDS ?? [];
+    // mock 초기값 없이, 관심 일정은 항상 비어 있는 상태에서 시작
+    return [];
   });
 
   // 변경될 때마다 localStorage에 저장
@@ -38,14 +37,9 @@ export function InterestScheduleProvider({ children }) {
     );
   };
 
-  const value = useMemo(
-    () => ({
-      interestedIds,
-      toggleInterest,
-      isInterested: (id) => (id ? interestedIds.includes(id) : false),
-    }),
-    [interestedIds]
-  );
+  const isInterested = (scheduleId) => interestedIds.includes(scheduleId);
+
+  const value = { interestedIds, isInterested, toggleInterest };
 
   return (
     <InterestScheduleContext.Provider value={value}>
