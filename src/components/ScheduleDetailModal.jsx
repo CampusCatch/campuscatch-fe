@@ -105,11 +105,11 @@ export default function ScheduleDetailModal({
           <div className="flex flex-wrap gap-2">
             {schedule.categories?.map((cat) => {
               // chipProps = { label, bgColor, textColor }
-              const chipProps = getCategoryChipProps[cat] || {};
+              const chipProps = getCategoryChipProps(cat) || {};
               return (
                 <Chip
                   key={cat} // 백엔드에서 카테고리 코드로 줄 경우 cat(원본 값) -> 이 경우 유틸 변경해야함
-                  label={chipProps.label} // 무조건 화면 라벨 : 한글 레이블
+                  label={chipProps.label ?? cat} // 무조건 화면 라벨 : 한글 레이블
                   bgColor={chipProps.bgColor}
                   textColor={chipProps.textColor}
                 />
@@ -130,25 +130,40 @@ export default function ScheduleDetailModal({
         <section className="mb-6">
           <h3 className="mb-2 text-sm font-semibold text-gray-90">추가 정보</h3>
           <div className="rounded-2xl bg-gray-5 px-3 py-3 text-sm text-gray-80">
-            <div className="grid grid-cols-[72px,1fr] gap-y-1">
-              <span className="text-xs text-gray-60">대상</span>
-              <span className="text-xs text-gray-90">{targetText}</span>
+            {/* 각 항목을 하나의 블록으로 묶고, 블록 사이 간격만 벌리기 */}
+            <div className="space-y-3">
+              <div>
+                <span className="block text-xs text-gray-60">대상</span>
+                <span className="block text-xs text-gray-90">{targetText}</span>
+              </div>
 
-              <span className="text-xs text-gray-60">장소</span>
-              <span className="text-xs text-gray-90">{locationText}</span>
+              <div>
+                <span className="block text-xs text-gray-60">장소</span>
+                <span className="block text-xs text-gray-90">
+                  {locationText}
+                </span>
+              </div>
 
-              <span className="text-xs text-gray-60">단과대</span>
-              <span className="text-xs text-gray-90">{collegeText}</span>
+              <div>
+                <span className="block text-xs text-gray-60">단과대</span>
+                <span className="block text-xs text-gray-90">
+                  {collegeText}
+                </span>
+              </div>
 
-              <span className="text-xs text-gray-60">지급일</span>
-              <span className="text-xs text-gray-90">{paymentDateText}</span>
+              <div>
+                <span className="block text-xs text-gray-60">지급일</span>
+                <span className="block text-xs text-gray-90">
+                  {paymentDateText}
+                </span>
+              </div>
 
-              <span className="text-xs text-gray-60">필수 문서</span>
-              <span className="text-xs text-gray-90 whitespace-pre-line">
-                {" "}
-                {/* 줄바꿈 유지 */}
-                {requiredDocsText}
-              </span>
+              <div>
+                <span className="block text-xs text-gray-60">필수 문서</span>
+                <span className="block text-xs text-gray-90 whitespace-pre-line">
+                  {requiredDocsText}
+                </span>
+              </div>
             </div>
           </div>
         </section>
