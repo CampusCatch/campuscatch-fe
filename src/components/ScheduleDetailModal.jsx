@@ -1,8 +1,9 @@
 import Chip from "./Chip";
 import Button from "./Button";
 
-// 카테고리별 색상 (아이콘/타이틀용)
+// 유틸 함수
 import { getCategoryChipProps } from "../utils/scheduleChipUtils";
+import { getCollegeNameById } from "../utils/collegeUtils";
 
 export default function ScheduleDetailModal({
   schedule,
@@ -23,18 +24,32 @@ export default function ScheduleDetailModal({
     ? mainCategoryProps.textColor.replace("text-", "bg-")
     : "bg-main";
 
-  let period;
+  const rawStart = schedule.startDate;
+  const rawEnd = schedule.endDate;
 
-  if (!schedule.startDate || !schedule.endDate) {
-    // 둘 중 하나라도 없으면
+  // 날짜가 "2025-12-01T..." 형식일 수도 있으니까 T 앞까지만 사용
+  const startDateStr = rawStart ? rawStart.split("T")[0] : null;
+  const endDateStr = rawEnd ? rawEnd.split("T")[0] : null;
+
+  let period;
+  if (!startDateStr || !endDateStr) {
     period = "기간 정보 없음";
-  } else if (schedule.startDate === schedule.endDate) {
-    // 시작일과 마감일이 같은 경우
-    period = `(당일) ${schedule.startDate}`;
+  } else if (startDateStr === endDateStr) {
+    // 하루짜리 일정
+    period = `(당일) ${startDateStr}`;
   } else {
-    // 그 외: 일반적인 기간
-    period = `${schedule.startDate} ~ ${schedule.endDate}`;
+    period = `${startDateStr} ~ ${endDateStr}`;
   }
+
+  // 나머지 텍스트들도 null 대비해서 안전하게
+  const locationText = schedule.location || "장소 정보 없음";
+  const targetText = schedule.target || "대상 정보 없음";
+  const paymentDateText = schedule.paymentDate || "지급일 정보 없음";
+  const requiredDocsText = schedule.requiredDocuments || "필수 문서 정보 없음";
+
+  // 단과대 이름 유틸 사용
+  const collegeName = getCollegeNameById(schedule.collegeId);
+  const collegeText = collegeName || "단과대 정보 없음";
 
   const handleBackgroundClick = () => {
     if (onClose) onClose();
@@ -84,14 +99,6 @@ export default function ScheduleDetailModal({
           </div>
         </div>
 
-        {/* 상세 내용 */}
-        <section className="mb-6">
-          <h3 className="mb-2 text-sm font-semibold text-gray-90">상세 내용</h3>
-          <div className="rounded-2xl bg-gray-5 py-1 text-sm text-gray-80">
-            {schedule.description || "상세 내용이 없습니다."}
-          </div>
-        </section>
-
         {/* 분류 */}
         <section className="mb-6">
           <h3 className="mb-2 text-sm font-semibold text-gray-90">분류</h3>
@@ -108,6 +115,41 @@ export default function ScheduleDetailModal({
                 />
               );
             })}
+          </div>
+        </section>
+
+        {/* 상세 내용 */}
+        <section className="mb-6">
+          <h3 className="mb-2 text-sm font-semibold text-gray-90">상세 내용</h3>
+          <div className="rounded-2xl bg-gray-5 py-1 text-sm text-gray-80">
+            {schedule.description || "상세 내용이 없습니다."}
+          </div>
+        </section>
+
+        {/* 추가 정보 */}
+        <section className="mb-6">
+          <h3 className="mb-2 text-sm font-semibold text-gray-90">추가 정보</h3>
+          <div className="rounded-2xl bg-gray-5 px-3 py-3 text-sm text-gray-80">
+            <div className="grid grid-cols-[72px,1fr] gap-y-1">
+              <span className="text-xs text-gray-60">대상</span>
+              <span className="text-xs text-gray-90">{targetText}</span>
+
+              <span className="text-xs text-gray-60">장소</span>
+              <span className="text-xs text-gray-90">{locationText}</span>
+
+              <span className="text-xs text-gray-60">단과대</span>
+              <span className="text-xs text-gray-90">{collegeText}</span>
+
+              <span className="text-xs text-gray-60">지급일</span>
+              <span className="text-xs text-gray-90">{paymentDateText}</span>
+
+              <span className="text-xs text-gray-60">필수 문서</span>
+              <span className="text-xs text-gray-90 whitespace-pre-line">
+                {" "}
+                {/* 줄바꿈 유지 */}
+                {requiredDocsText}
+              </span>
+            </div>
           </div>
         </section>
 
