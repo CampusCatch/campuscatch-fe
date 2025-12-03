@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { InterestScheduleProvider } from "@/contexts/InterestScheduleContext";
+import { InterestScheduleProvider } from "@/contexts/InterestScheduleProvider";
 import MainLayout from "./layouts/MainLayout";
 
 // 페이지들

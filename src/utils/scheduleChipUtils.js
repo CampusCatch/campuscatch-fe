@@ -37,7 +37,7 @@ export const getCategoryChipProps = (category) => {
         bgColor: "bg-category-my/10",
         textColor: "text-category-my",
       };
-    default:
+    default: // 기타 카테고리 -> 근데 필요는 없을듯
       return {
         label: category,
         bgColor: "bg-gray-20",
@@ -77,7 +77,7 @@ export const getStatusChipProps = (status) => {
         bgColor: "bg-category-my",
         textColor: "text-white",
       };
-    default:
+    default: // 업로드: 처리중
       return {
         label: status,
         bgColor: "bg-gray-20",

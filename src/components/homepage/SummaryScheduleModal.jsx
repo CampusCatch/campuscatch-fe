@@ -1,32 +1,5 @@
 import Chip from "../Chip";
-
-// 카테고리 별 칩 색상
-const CATEGORY_STYLE = {
-  학사: {
-    chipBg: "bg-category-academic/10",
-    textColor: "text-category-academic",
-  },
-  장학: {
-    chipBg: "bg-category-scholarship/10",
-    textColor: "text-category-scholarship",
-  },
-  취업: {
-    chipBg: "bg-category-career/10",
-    textColor: "text-category-career",
-  },
-  국제교류: {
-    chipBg: "bg-category-international/10",
-    textColor: "text-category-international",
-  },
-  "근로/조교": {
-    chipBg: "bg-category-work/10",
-    textColor: "text-category-work",
-  },
-  MY: {
-    chipBg: "bg-category-my/10",
-    textColor: "text-category-my",
-  },
-};
+import { getCategoryChipProps } from "../../utils/scheduleChipUtils";
 
 // 모달 타입별 공통 스타일
 const TYPE_STYLE = {
@@ -37,7 +10,7 @@ const TYPE_STYLE = {
   },
   deadline: {
     title: "마감 임박",
-    badgeLabel: "마감 임박",
+    badgeLabel: "마감임박",
     bgClass: "bg-category-international/5",
   },
   notice: {
@@ -47,10 +20,10 @@ const TYPE_STYLE = {
   },
 };
 
-// "2025. 09. 15." -> Date
+// "2025. 09. 15." / "2025-09-15" 등 -> Date
 function parseDotDate(str) {
   if (!str) return null;
-  // 숫자만 남기기
+  // 숫자만 남기기 (구분자가 .이든 -이든 /이든 공백이든 상관없음)
   const cleaned = str.replace(/[^\d]/g, ""); // "20250915"
   if (cleaned.length < 8) return null;
 
@@ -74,7 +47,7 @@ function formatHyphenDate(date) {
 function SummaryScheduleItemCard({ type, schedule, onClick }) {
   const typeStyle = TYPE_STYLE[type];
   const mainCategory = schedule.categories?.[0] ?? "학사";
-  const categoryStyle = CATEGORY_STYLE[mainCategory] || {};
+  const categoryChipProps = getCategoryChipProps(mainCategory);
 
   const start = parseDotDate(schedule.startDate);
   const end = parseDotDate(schedule.endDate || schedule.startDate);
@@ -109,10 +82,16 @@ function SummaryScheduleItemCard({ type, schedule, onClick }) {
   // 위치 텍스트는 schedule.location 있는 경우만 사용 (목데이터에는 아직 없음)
   const locationLabel = schedule.location;
 
+  // 카드 클릭 시도도 버블링 방지
+  const handleItemClick = (e) => {
+    e.stopPropagation(); // 오버레이까지 클릭 이벤트 올라가는 것 방지
+    onClick?.();
+  };
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleItemClick}
       className={`w-full rounded-2xl ${typeStyle.bgClass} px-4 py-4 text-left shadow-sm hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-main`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -129,9 +108,9 @@ function SummaryScheduleItemCard({ type, schedule, onClick }) {
 
             {/* 카테고리 칩 */}
             <Chip
-              label={mainCategory}
-              bgColor={categoryStyle.chipBg || "bg-gray-10"}
-              textColor={categoryStyle.textColor || "text-gray-80"}
+              label={categoryChipProps.label}
+              bgColor={categoryChipProps.bgColor}
+              textColor={categoryChipProps.textColor}
             />
           </div>
 
@@ -144,7 +123,7 @@ function SummaryScheduleItemCard({ type, schedule, onClick }) {
           {dateText && <p className={dateClassName}>{dateText}</p>}
         </div>
 
-        {/* 오른쪽 하단: 위치 */}
+        {/* 오른쪽 상단: 위치 */}
         {locationLabel && (
           <div className="flex min-w-[88px] flex-col items-end justify-end text-xs text-gray-70">
             <div className="flex items-center gap-1">
@@ -175,7 +154,7 @@ export default function SummaryScheduleModal({
     onClose?.();
   };
 
-  const handleContentClick = (e) => {
+  const handleInnerClick = (e) => {
     e.stopPropagation();
   };
 
@@ -186,7 +165,7 @@ export default function SummaryScheduleModal({
     >
       <div
         className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-6 sm:p-8"
-        onClick={handleContentClick}
+        onClick={handleInnerClick}
       >
         {/* 헤더 */}
         <header className="mb-6 flex items-center justify-between">

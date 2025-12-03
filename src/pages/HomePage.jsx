@@ -3,18 +3,20 @@ import { useOutletContext } from "react-router-dom";
 import MonthlyCalendar from "../components/homepage/MonthlyCalendar";
 import SummaryStatCard from "../components/homepage/SummaryStatCard";
 import ScheduleDetailModal from "../components/ScheduleDetailModal";
+import SummaryScheduleModal from "../components/homepage/SummaryScheduleModal";
 import { MOCK_SCHEDULES } from "../mocks/scheduleMocks";
-import { useInterestSchedules } from "@/contexts/InterestScheduleContext";
+import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 
-// "2025. 09. 15." 형태 문자열 -> Date
-function parseDotDate(dotString) {
-  const parts = dotString
-    .split(".")
-    .map((v) => v.trim())
-    .filter(Boolean)
-    .map(Number);
+// "2025-09-15" 형태 문자열 -> Date
+function parseYmdDate(ymdString) {
+  if (!ymdString) return null;
+  const [yearStr, monthStr, dayStr] = ymdString.split("-");
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
 
-  const [year, month, day] = parts;
+  if (!year || !month || !day) return null;
+
   return new Date(year, month - 1, day);
 }
 
@@ -28,15 +30,18 @@ export default function HomePage() {
     selectedCategories: ["학사"],
   };
 
-  const today = new Date();
-
   // 전역 관심 일정 상태 사용
   const { isInterested, toggleInterest } = useInterestSchedules();
 
   // 모달에서 사용할 상태
   const [selectedSchedule, setSelectedSchedule] = useState(null);
+  // 요약 모달 상태
+  const [statModalType, setStatModalType] = useState(null); // 'today' | 'deadline' | 'notice' | null
+  const [statModalSchedules, setStatModalSchedules] = useState([]);
 
   const { todayCount, deadlineSoonCount, noticeCount } = useMemo(() => {
+    const today = new Date();
+
     const todayOnly = new Date(
       today.getFullYear(),
       today.getMonth(),
@@ -47,8 +52,9 @@ export default function HomePage() {
     let deadlineCnt = 0;
 
     MOCK_SCHEDULES.forEach((schedule) => {
-      const start = parseDotDate(schedule.startDate);
-      const end = parseDotDate(schedule.endDate);
+      const start = parseYmdDate(schedule.startDate);
+      const end = parseYmdDate(schedule.endDate);
+      if (!start || !end) return;
 
       // 오늘 포함된 일정
       if (isInRange(todayOnly, start, end)) {
@@ -71,10 +77,50 @@ export default function HomePage() {
       deadlineSoonCount: deadlineCnt,
       noticeCount: noticeCnt,
     };
-  }, [today]);
+  }, []);
 
+  // schedule 객체 = MOCK_SCHEDULES의 원소 -> ScheduleDetailModal의 schedule prop으로 들어감
   const handleScheduleClick = (schedule) => {
     setSelectedSchedule(schedule);
+  };
+
+  const handleOpenStatModal = (type) => {
+    const now = new Date();
+    const todayOnly = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    let filtered = [];
+
+    if (type === "today") {
+      filtered = MOCK_SCHEDULES.filter((schedule) => {
+        const start = parseYmdDate(schedule.startDate);
+        const end = parseYmdDate(schedule.endDate || schedule.startDate);
+        if (!start || !end) return false;
+        return isInRange(todayOnly, start, end);
+      });
+    } else if (type === "deadline") {
+      filtered = MOCK_SCHEDULES.filter((schedule) => {
+        const end = parseYmdDate(schedule.endDate || schedule.startDate);
+        if (!end) return false;
+        const diffMs = end.getTime() - todayOnly.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays >= 0 && diffDays <= 3;
+      });
+    } else if (type === "notice") {
+      // 일단은 전체 일정 = 새 공지라고 가정
+      filtered = [...MOCK_SCHEDULES];
+    }
+
+    setStatModalType(type);
+    setStatModalSchedules(filtered);
+  };
+
+  const handleCloseStatModal = () => {
+    setStatModalType(null);
+    setStatModalSchedules([]);
   };
 
   const handleCloseModal = () => {
@@ -113,10 +159,7 @@ export default function HomePage() {
           iconSrc="/icons/time.svg"
           iconAlt="오늘 일정"
           iconBgClass="bg-main/10"
-          onClick={() => {
-            // TODO: 오늘 일정 목록 모달
-            console.log("오늘 일정 카드 클릭");
-          }}
+          onClick={() => handleOpenStatModal("today")}
         />
         <SummaryStatCard
           label="마감 임박"
@@ -124,10 +167,7 @@ export default function HomePage() {
           iconSrc="/icons/warning.svg"
           iconAlt="마감 임박"
           iconBgClass="bg-orange-100"
-          onClick={() => {
-            // TODO: 마감 임박 일정 모달
-            console.log("마감 임박 카드 클릭");
-          }}
+          onClick={() => handleOpenStatModal("deadline")}
         />
         <SummaryStatCard
           label="새 공지"
@@ -135,12 +175,21 @@ export default function HomePage() {
           iconSrc="/icons/document.svg"
           iconAlt="새 공지"
           iconBgClass="bg-blue-100"
-          onClick={() => {
-            // TODO: 새 공지 목록 모달
-            console.log("새 공지 카드 클릭");
-          }}
+          onClick={() => handleOpenStatModal("notice")}
         />
       </section>
+
+      <SummaryScheduleModal
+        type={statModalType}
+        schedules={statModalSchedules}
+        isOpen={!!statModalType}
+        onClose={handleCloseStatModal}
+        onScheduleClick={(schedule) => {
+          // 요약 모달에서 일정 클릭하면 상세 모달 열고, 요약 모달은 닫기
+          setSelectedSchedule(schedule);
+          setStatModalType(null);
+        }}
+      />
 
       {/* 일정 상세 모달 */}
       <ScheduleDetailModal

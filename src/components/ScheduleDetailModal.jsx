@@ -1,39 +1,9 @@
 import Chip from "./Chip";
 import Button from "./Button";
 
-// 카테고리별 색상 (아이콘/타이틀용)
-const CATEGORY_STYLE = {
-  학사: {
-    iconBg: "bg-category-academic",
-    titleColor: "text-category-academic",
-    chipBg: "bg-category-academic/10",
-  },
-  장학: {
-    iconBg: "bg-category-scholarship",
-    titleColor: "text-category-scholarship",
-    chipBg: "bg-category-scholarship/10",
-  },
-  취업: {
-    iconBg: "bg-category-career",
-    titleColor: "text-category-career",
-    chipBg: "bg-category-career/10",
-  },
-  국제교류: {
-    iconBg: "bg-category-international",
-    titleColor: "text-category-international",
-    chipBg: "bg-category-international/10",
-  },
-  "근로/조교": {
-    iconBg: "bg-category-work",
-    titleColor: "text-category-work",
-    chipBg: "bg-category-work/10",
-  },
-  MY: {
-    iconBg: "bg-category-my",
-    titleColor: "text-category-my",
-    chipBg: "bg-category-my/10",
-  },
-};
+// 유틸 함수
+import { getCategoryChipProps } from "../utils/scheduleChipUtils";
+import { getCollegeNameById } from "../utils/collegeUtils";
 
 export default function ScheduleDetailModal({
   schedule,
@@ -44,12 +14,45 @@ export default function ScheduleDetailModal({
 }) {
   if (!isOpen || !schedule) return null;
 
+  // 카테고리 매치
   const mainCategory = schedule.categories?.[0] || "학사";
-  const style = CATEGORY_STYLE[mainCategory] || {};
-  const period =
-    schedule.startDate && schedule.endDate
-      ? `${schedule.startDate} ~ ${schedule.endDate}`
-      : "기간 정보 없음";
+
+  // 대표 카테고리 스타일 가져오기
+  const mainCategoryProps = getCategoryChipProps(mainCategory);
+  // text-category-academic → bg-category-academic 이런 식으로 변환해서 아이콘 배경에 사용
+  const iconBgClass = mainCategoryProps?.textColor
+    ? mainCategoryProps.textColor.replace("text-", "bg-")
+    : "bg-main";
+
+  const rawStart = schedule.startDate;
+  const rawEnd = schedule.endDate;
+
+  // 날짜가 "2025-12-01T..." 형식일 수도 있으니까 T 앞까지만 사용
+  const startDateStr = rawStart ? rawStart.split("T")[0] : null;
+  const endDateStr = rawEnd ? rawEnd.split("T")[0] : null;
+
+  let period;
+  if (!startDateStr || !endDateStr) {
+    period = "기간 정보 없음";
+  } else if (startDateStr === endDateStr) {
+    // 하루짜리 일정
+    period = `(당일) ${startDateStr}`;
+  } else {
+    period = `${startDateStr} ~ ${endDateStr}`;
+  }
+
+  // 단과대 이름 유틸 사용
+  const collegeName = getCollegeNameById(schedule.collegeId);
+
+  // 추가 정보에서 보여줄 항목들: 값이 있을 때만 칸 렌더링
+  const hasTarget = !!schedule.target;
+  const hasLocation = !!schedule.location;
+  const hasCollege = !!collegeName;
+  const hasPaymentDate = !!schedule.paymentDate;
+  const hasRequiredDocs = !!schedule.requiredDocuments;
+
+  const hasAnyExtraInfo =
+    hasTarget || hasLocation || hasCollege || hasPaymentDate || hasRequiredDocs;
 
   const handleBackgroundClick = () => {
     if (onClose) onClose();
@@ -76,25 +79,21 @@ export default function ScheduleDetailModal({
             onClick={onClose}
             className="h-8 w-8 rounded-full text-gray-60 hover:bg-gray-10 flex items-center justify-center"
           >
-            {/* 아이콘 파일 있으면 교체: /icons/close.svg */}
             <img src="/icons/close.svg" alt="닫기" className="h-4 w-4" />
-            <span className="sr-only">닫기</span>
           </button>
         </div>
 
         {/* 상단 일정 카드 */}
         <div className="mb-6 rounded-2xl border border-gray-20 bg-gray-5 px-4 py-4 flex items-center gap-4">
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
-              style.iconBg || "bg-main"
-            }`}
+            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBgClass}`}
           >
             <img src="/icons/calendar-white.svg" alt="" className="h-6 w-6" />
           </div>
           <div className="flex flex-col gap-1">
             <p
               className={`text-base font-semibold ${
-                style.titleColor || "text-gray-90"
+                mainCategoryProps.titleColor || "text-gray-90"
               }`}
             >
               {schedule.title}
@@ -102,6 +101,25 @@ export default function ScheduleDetailModal({
             <p className="text-xs text-gray-70">기간: {period}</p>
           </div>
         </div>
+
+        {/* 분류 */}
+        <section className="mb-6">
+          <h3 className="mb-2 text-sm font-semibold text-gray-90">분류</h3>
+          <div className="flex flex-wrap gap-2">
+            {schedule.categories?.map((cat) => {
+              // chipProps = { label, bgColor, textColor }
+              const chipProps = getCategoryChipProps(cat) || {};
+              return (
+                <Chip
+                  key={cat} // 백엔드에서 카테고리 코드로 줄 경우 cat(원본 값) -> 이 경우 유틸 변경해야함
+                  label={chipProps.label ?? cat} // 무조건 화면 라벨 : 한글 레이블
+                  bgColor={chipProps.bgColor}
+                  textColor={chipProps.textColor}
+                />
+              );
+            })}
+          </div>
+        </section>
 
         {/* 상세 내용 */}
         <section className="mb-6">
@@ -111,23 +129,64 @@ export default function ScheduleDetailModal({
           </div>
         </section>
 
-        {/* 분류 */}
-        <section className="mb-6">
-          <h3 className="mb-2 text-sm font-semibold text-gray-90">분류</h3>
-          <div className="flex flex-wrap gap-2">
-            {schedule.categories?.map((cat) => {
-              const s = CATEGORY_STYLE[cat] || {};
-              return (
-                <Chip
-                  key={cat}
-                  label={cat}
-                  bgColor={s.chipBg || "bg-gray-10"}
-                  textColor={s.titleColor || "text-gray-80"}
-                />
-              );
-            })}
-          </div>
-        </section>
+        {/* 추가 정보: 값이 하나라도 있을 때만 섹션 렌더 */}
+        {hasAnyExtraInfo && (
+          <section className="mb-6">
+            <h3 className="mb-2 text-sm font-semibold text-gray-90">
+              추가 정보
+            </h3>
+            <div className="rounded-2xl bg-gray-5 px-3 py-3 text-sm text-gray-80">
+              <div className="space-y-3">
+                {hasTarget && (
+                  <div>
+                    <span className="block text-xs text-gray-60">대상</span>
+                    <span className="block text-xs text-gray-90">
+                      {schedule.target}
+                    </span>
+                  </div>
+                )}
+
+                {hasLocation && (
+                  <div>
+                    <span className="block text-xs text-gray-60">장소</span>
+                    <span className="block text-xs text-gray-90">
+                      {schedule.location}
+                    </span>
+                  </div>
+                )}
+
+                {hasCollege && (
+                  <div>
+                    <span className="block text-xs text-gray-60">단과대</span>
+                    <span className="block text-xs text-gray-90">
+                      {collegeName}
+                    </span>
+                  </div>
+                )}
+
+                {hasPaymentDate && (
+                  <div>
+                    <span className="block text-xs text-gray-60">지급일</span>
+                    <span className="block text-xs text-gray-90">
+                      {schedule.paymentDate}
+                    </span>
+                  </div>
+                )}
+
+                {hasRequiredDocs && (
+                  <div>
+                    <span className="block text-xs text-gray-60">
+                      필수 문서
+                    </span>
+                    <span className="block text-xs text-gray-90 whitespace-pre-line">
+                      {schedule.requiredDocuments}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* 원본 링크 */}
         <section className="mb-2">
