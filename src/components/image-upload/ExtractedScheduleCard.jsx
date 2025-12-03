@@ -13,10 +13,14 @@ const CATEGORY_OPTIONS = [
 
 /**
  * props
- * - extractedData: { title?, startDate?, endDate?, category? } | null
+ * - extractedData: { title?, startDate?, endDate?, category?, description? } | null
+ *   👉 OCR 결과에서 description 들어오면 상세 내용 textarea에 반영
  * - onSave: (payload) => void
  *   payload: {
- *     title, startDate, endDate, memo,
+ *     title,
+ *     startDate,
+ *     endDate,
+ *     description,
  *     categories: string[] // [선택 카테고리, "MY"]
  *   }
  * - isSaving?: boolean
@@ -32,7 +36,7 @@ export default function ExtractedScheduleCard({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [category, setCategory] = useState("학사"); // 기본값
-  const [memo, setMemo] = useState("");
+  const [description, setDescription] = useState("");
 
   // OCR 분석 결과 들어오면 폼에 반영
   useEffect(() => {
@@ -46,6 +50,9 @@ export default function ExtractedScheduleCard({
     ) {
       setCategory(extractedData.category);
     }
+    if (extractedData.description) {
+      setDescription(extractedData.description);
+    }
   }, [extractedData]);
 
   const handleSubmit = (e) => {
@@ -56,7 +63,7 @@ export default function ExtractedScheduleCard({
       title,
       startDate,
       endDate,
-      memo,
+      description,
       // 여기서부터는 필터용 태그 개념
       categories: [category, "MY"],
     });
@@ -150,13 +157,13 @@ export default function ExtractedScheduleCard({
           </p>
         </div>
 
-        {/* 메모 */}
+        {/* 상세 내용 추가 */}
         <TextInput
-          label="메모"
+          label="상세 내용 추가"
           as="textarea"
-          value={memo}
-          onValueChange={setMemo}
-          placeholder="추가 정보를 입력하세요"
+          value={description}
+          onValueChange={setDescription}
+          placeholder="OCR로 추출된 내용을 확인하고 수정해 주세요"
         />
 
         {/* 일정 저장 버튼 */}
