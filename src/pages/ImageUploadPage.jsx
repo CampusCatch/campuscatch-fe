@@ -1,42 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ImageUploadCard from "../components/image-upload/ImageUploadCard";
 import ExtractedScheduleCard from "../components/image-upload/ExtractedScheduleCard";
 import RecentUploadedSchedulesCard from "../components/image-upload/RecentUploadedSchedulesCard";
 import ScheduleDetailModal from "../components/ScheduleDetailModal";
-import { useInterestSchedules } from "@/contexts/InterestScheduleContext";
+import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 
-const INITIAL_RECENT = [
-  {
-    id: "u-1",
-    title: "기말고사 시간표",
-    categories: ["학사"],
-    category: "학사",
-    startDate: "2024. 08. 14.",
-    endDate: "2024. 08. 20.",
-    dateText: "2024-08-14",
-    status: "처리완료",
-  },
-  {
-    id: "u-2",
-    title: "장학금 신청 안내",
-    categories: ["장학"],
-    category: "장학",
-    startDate: "2024. 08. 13.",
-    endDate: "2024. 08. 13.",
-    dateText: "2024-08-13",
-    status: "처리중",
-  },
-  {
-    id: "u-3",
-    title: "취업 특강 포스터",
-    categories: ["취업"],
-    category: "취업",
-    startDate: "2024. 08. 12.",
-    endDate: "2024. 08. 12.",
-    dateText: "2024-08-12",
-    status: "처리완료",
-  },
-];
+const INITIAL_RECENT = [];
 
 export default function ImageUploadPage() {
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -98,6 +67,8 @@ export default function ImageUploadPage() {
         description: payload.description,
         linkUrl: payload.linkUrl,
         status: "처리완료",
+        // 업로드 시점 기록 (필터용)
+        uploadedAt: new Date().toISOString(),
       },
       ...prev,
     ]);
@@ -129,6 +100,34 @@ export default function ImageUploadPage() {
   const isSelectedInterested =
     selectedSchedule && isInterested(selectedSchedule.id);
 
+  // 오늘 포함 최근 2일 이내에 업로드된 일정만 표시
+  const visibleRecentItems = useMemo(() => {
+    if (!recentItems.length) return [];
+
+    const now = new Date();
+    const todayOnly = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    return recentItems.filter((item) => {
+      if (!item.uploadedAt) return false;
+      const uploaded = new Date(item.uploadedAt);
+      const uploadedOnly = new Date(
+        uploaded.getFullYear(),
+        uploaded.getMonth(),
+        uploaded.getDate()
+      );
+
+      const diffMs = todayOnly.getTime() - uploadedOnly.getTime();
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+      // 오늘(0일 차) ~ 이틀 전(2일 차)까지만
+      return diffDays >= 0 && diffDays <= 2;
+    });
+  }, [recentItems]);
+
   return (
     <div className="w-full">
       {/* 페이지 제목 / 설명 */}
@@ -158,7 +157,7 @@ export default function ImageUploadPage() {
       {/* 최근 업로드한 일정 */}
       <section className="mt-8">
         <RecentUploadedSchedulesCard
-          items={recentItems}
+          items={visibleRecentItems}
           onClickSchedule={handleOpenRecentDetail}
         />
       </section>
