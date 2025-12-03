@@ -36,8 +36,6 @@ export default function ProfileCard({
     onAvatarChange?.(file); // 부모에서 업로드 API 연동할 수 있게 콜백
   };
 
-  const firstChar = name ? name[0] : "";
-
   return (
     <section
       className={[

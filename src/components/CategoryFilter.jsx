@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CATEGORY_OPTIONS, MOCK_SCHEDULES } from "../../mocks/scheduleMocks";
+import { CATEGORY_OPTIONS, MOCK_SCHEDULES } from "../mocks/scheduleMocks";
 
 // 카테고리별 색상 점 클래스 매핑
 const CATEGORY_DOT_CLASS = {

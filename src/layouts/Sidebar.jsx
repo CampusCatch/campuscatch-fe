@@ -1,30 +1,34 @@
 import { NavLink, useLocation, Link } from "react-router-dom";
-import CategoryFilter from "../components/mypage/CategoryFilter";
+import CategoryFilter from "../components/CategoryFilter";
 
 const NAV_ITEMS = [
   {
     id: "home",
     label: "홈",
     path: "/",
-    icon: "/icons/home.svg",
+    iconSelected: "/icons/select/home.svg",
+    iconUnselected: "/icons/unselect/home.svg",
   },
   {
     id: "interest",
     label: "관심 일정 관리",
     path: "/interest",
-    icon: "/icons/heart.svg",
+    iconSelected: "/icons/select/heart.svg",
+    iconUnselected: "/icons/unselect/heart.svg",
   },
   {
     id: "upload",
     label: "이미지 업로드",
     path: "/upload",
-    icon: "/icons/upload.svg",
+    iconSelected: "/icons/select/upload.svg",
+    iconUnselected: "/icons/unselect/upload.svg",
   },
   {
     id: "mypage",
     label: "마이페이지",
     path: "/mypage",
-    icon: "/icons/user.svg",
+    iconSelected: "/icons/select/user.svg",
+    iconUnselected: "/icons/unselect/user.svg",
   },
 ];
 
@@ -87,9 +91,17 @@ export default function Sidebar({
                 .join(" ")
             }
           >
-            <img src={item.icon} alt={item.label} className="w-6 h-6" />
-            {!isCollapsed && (
-              <span className="whitespace-nowrap">{item.label}</span>
+            {({ isActive }) => (
+              <>
+                <img
+                  src={isActive ? item.iconSelected : item.iconUnselected}
+                  alt={item.label}
+                  className="w-6 h-6"
+                />
+                {!isCollapsed && (
+                  <span className="whitespace-nowrap">{item.label}</span>
+                )}
+              </>
             )}
           </NavLink>
         ))}
