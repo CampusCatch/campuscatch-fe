@@ -82,7 +82,7 @@ export default function ImageUploadCard({
         {!previewUrl && (
           <>
             <img
-              src="/icons/upload.svg"
+              src="/icons/unselect/upload.svg"
               alt="업로드"
               className="w-12 h-12 mb-6"
             />

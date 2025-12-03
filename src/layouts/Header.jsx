@@ -47,7 +47,11 @@ export default function Header({ isSidebarCollapsed, onToggleSidebar }) {
           onClick={() => navigate("/mypage")} // 마이페이지로 이동
           className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gray-20"
         >
-          <img src="/icons/user.svg" alt="내 프로필" className="w-6 h-6" />
+          <img
+            src="/icons/unselect/user.svg"
+            alt="내 프로필"
+            className="w-6 h-6"
+          />
         </button>
       </div>
     </header>
