@@ -43,15 +43,16 @@ const CATEGORY_STYLE = {
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-function parseDotDate(dotString) {
-  // "2025. 09. 15." -> Date
-  const parts = dotString
-    .split(".")
-    .map((v) => v.trim())
-    .filter(Boolean)
-    .map(Number);
+// "2025-11-15" 형태 문자열 -> Date
+function parseYmdDate(ymdString) {
+  if (!ymdString) return null;
+  const [yearStr, monthStr, dayStr] = ymdString.split("-");
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
 
-  const [year, month, day] = parts;
+  if (!year || !month || !day) return null;
+
   return new Date(year, month - 1, day);
 }
 
@@ -78,8 +79,6 @@ export default function MonthlyCalendar({
     const { year, month } = currentYM;
     const firstDay = new Date(year, month, 1);
     const firstWeekday = firstDay.getDay(); // 0(일)~6(토)
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
 
     const weeksArr = [];
     let dayCounter = 1 - firstWeekday; // 첫 셀에 들어갈 날짜(이전달 포함)
@@ -124,8 +123,8 @@ export default function MonthlyCalendar({
       const segments = [];
 
       filteredSchedules.forEach((schedule) => {
-        const start = parseDotDate(schedule.startDate);
-        const end = parseDotDate(schedule.endDate);
+        const start = parseYmdDate(schedule.startDate);
+        const end = parseYmdDate(schedule.endDate);
 
         // 이 주와 전혀 겹치지 않으면 스킵
         if (end < weekStart || start > weekEnd) return;
