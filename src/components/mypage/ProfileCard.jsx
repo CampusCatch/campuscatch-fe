@@ -71,7 +71,7 @@ export default function ProfileCard({
               />
             ) : (
               <img
-                src="/icons/user.svg"
+                src="/icons/unselect/user.svg"
                 alt="기본 프로필"
                 className="w-25 h-25"
               />
