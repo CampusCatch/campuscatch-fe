@@ -2,38 +2,7 @@ import Chip from "./Chip";
 import Button from "./Button";
 
 // 카테고리별 색상 (아이콘/타이틀용)
-const CATEGORY_STYLE = {
-  학사: {
-    iconBg: "bg-category-academic",
-    titleColor: "text-category-academic",
-    chipBg: "bg-category-academic/10",
-  },
-  장학: {
-    iconBg: "bg-category-scholarship",
-    titleColor: "text-category-scholarship",
-    chipBg: "bg-category-scholarship/10",
-  },
-  취업: {
-    iconBg: "bg-category-career",
-    titleColor: "text-category-career",
-    chipBg: "bg-category-career/10",
-  },
-  국제교류: {
-    iconBg: "bg-category-international",
-    titleColor: "text-category-international",
-    chipBg: "bg-category-international/10",
-  },
-  "근로/조교": {
-    iconBg: "bg-category-work",
-    titleColor: "text-category-work",
-    chipBg: "bg-category-work/10",
-  },
-  MY: {
-    iconBg: "bg-category-my",
-    titleColor: "text-category-my",
-    chipBg: "bg-category-my/10",
-  },
-};
+import { getCategoryChipProps } from "../utils/scheduleChipUtils";
 
 export default function ScheduleDetailModal({
   schedule,
@@ -44,12 +13,28 @@ export default function ScheduleDetailModal({
 }) {
   if (!isOpen || !schedule) return null;
 
+  // 카테고리 매치
   const mainCategory = schedule.categories?.[0] || "학사";
-  const style = CATEGORY_STYLE[mainCategory] || {};
-  const period =
-    schedule.startDate && schedule.endDate
-      ? `${schedule.startDate} ~ ${schedule.endDate}`
-      : "기간 정보 없음";
+
+  // 대표 카테고리 스타일 가져오기
+  const mainCategoryProps = getCategoryChipProps(mainCategory);
+  // text-category-academic → bg-category-academic 이런 식으로 변환해서 아이콘 배경에 사용
+  const iconBgClass = mainCategoryProps?.textColor
+    ? mainCategoryProps.textColor.replace("text-", "bg-")
+    : "bg-main";
+
+  let period;
+
+  if (!schedule.startDate || !schedule.endDate) {
+    // 둘 중 하나라도 없으면
+    period = "기간 정보 없음";
+  } else if (schedule.startDate === schedule.endDate) {
+    // 시작일과 마감일이 같은 경우
+    period = `(당일) ${schedule.startDate}`;
+  } else {
+    // 그 외: 일반적인 기간
+    period = `${schedule.startDate} ~ ${schedule.endDate}`;
+  }
 
   const handleBackgroundClick = () => {
     if (onClose) onClose();
@@ -76,25 +61,21 @@ export default function ScheduleDetailModal({
             onClick={onClose}
             className="h-8 w-8 rounded-full text-gray-60 hover:bg-gray-10 flex items-center justify-center"
           >
-            {/* 아이콘 파일 있으면 교체: /icons/close.svg */}
             <img src="/icons/close.svg" alt="닫기" className="h-4 w-4" />
-            <span className="sr-only">닫기</span>
           </button>
         </div>
 
         {/* 상단 일정 카드 */}
         <div className="mb-6 rounded-2xl border border-gray-20 bg-gray-5 px-4 py-4 flex items-center gap-4">
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
-              style.iconBg || "bg-main"
-            }`}
+            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBgClass}`}
           >
             <img src="/icons/calendar-white.svg" alt="" className="h-6 w-6" />
           </div>
           <div className="flex flex-col gap-1">
             <p
               className={`text-base font-semibold ${
-                style.titleColor || "text-gray-90"
+                mainCategoryProps.titleColor || "text-gray-90"
               }`}
             >
               {schedule.title}
@@ -116,13 +97,14 @@ export default function ScheduleDetailModal({
           <h3 className="mb-2 text-sm font-semibold text-gray-90">분류</h3>
           <div className="flex flex-wrap gap-2">
             {schedule.categories?.map((cat) => {
-              const s = CATEGORY_STYLE[cat] || {};
+              // chipProps = { label, bgColor, textColor }
+              const chipProps = getCategoryChipProps[cat] || {};
               return (
                 <Chip
-                  key={cat}
-                  label={cat}
-                  bgColor={s.chipBg || "bg-gray-10"}
-                  textColor={s.titleColor || "text-gray-80"}
+                  key={cat} // 백엔드에서 카테고리 코드로 줄 경우 cat(원본 값) -> 이 경우 유틸 변경해야함
+                  label={chipProps.label} // 무조건 화면 라벨 : 한글 레이블
+                  bgColor={chipProps.bgColor}
+                  textColor={chipProps.textColor}
                 />
               );
             })}
