@@ -282,5 +282,5 @@ export const MOCK_SCHEDULES = [
   },
 ];
 
-// 관심 일정 ID 목록 (혼합 카테고리)
-export const MOCK_INTEREST_SCHEDULE_IDS = ["mix-1", "mix-2"];
+// 관심 일정 ID 목록 (초기값 없음)
+export const MOCK_INTEREST_SCHEDULE_IDS = [];
