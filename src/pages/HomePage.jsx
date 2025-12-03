@@ -5,7 +5,7 @@ import SummaryStatCard from "../components/homepage/SummaryStatCard";
 import ScheduleDetailModal from "../components/ScheduleDetailModal";
 import SummaryScheduleModal from "../components/homepage/SummaryScheduleModal";
 import { MOCK_SCHEDULES } from "../mocks/scheduleMocks";
-import { useInterestSchedules } from "@/contexts/InterestScheduleContext";
+import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 
 // "2025-09-15" 형태 문자열 -> Date
 function parseYmdDate(ymdString) {
