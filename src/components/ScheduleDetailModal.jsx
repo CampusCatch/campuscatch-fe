@@ -41,15 +41,18 @@ export default function ScheduleDetailModal({
     period = `${startDateStr} ~ ${endDateStr}`;
   }
 
-  // 나머지 텍스트들도 null 대비해서 안전하게
-  const locationText = schedule.location || "장소 정보 없음";
-  const targetText = schedule.target || "대상 정보 없음";
-  const paymentDateText = schedule.paymentDate || "지급일 정보 없음";
-  const requiredDocsText = schedule.requiredDocuments || "필수 문서 정보 없음";
-
   // 단과대 이름 유틸 사용
   const collegeName = getCollegeNameById(schedule.collegeId);
-  const collegeText = collegeName || "단과대 정보 없음";
+
+  // 추가 정보에서 보여줄 항목들: 값이 있을 때만 칸 렌더링
+  const hasTarget = !!schedule.target;
+  const hasLocation = !!schedule.location;
+  const hasCollege = !!collegeName;
+  const hasPaymentDate = !!schedule.paymentDate;
+  const hasRequiredDocs = !!schedule.requiredDocuments;
+
+  const hasAnyExtraInfo =
+    hasTarget || hasLocation || hasCollege || hasPaymentDate || hasRequiredDocs;
 
   const handleBackgroundClick = () => {
     if (onClose) onClose();
@@ -126,47 +129,64 @@ export default function ScheduleDetailModal({
           </div>
         </section>
 
-        {/* 추가 정보 */}
-        <section className="mb-6">
-          <h3 className="mb-2 text-sm font-semibold text-gray-90">추가 정보</h3>
-          <div className="rounded-2xl bg-gray-5 px-3 py-3 text-sm text-gray-80">
-            {/* 각 항목을 하나의 블록으로 묶고, 블록 사이 간격만 벌리기 */}
-            <div className="space-y-3">
-              <div>
-                <span className="block text-xs text-gray-60">대상</span>
-                <span className="block text-xs text-gray-90">{targetText}</span>
-              </div>
+        {/* 추가 정보: 값이 하나라도 있을 때만 섹션 렌더 */}
+        {hasAnyExtraInfo && (
+          <section className="mb-6">
+            <h3 className="mb-2 text-sm font-semibold text-gray-90">
+              추가 정보
+            </h3>
+            <div className="rounded-2xl bg-gray-5 px-3 py-3 text-sm text-gray-80">
+              <div className="space-y-3">
+                {hasTarget && (
+                  <div>
+                    <span className="block text-xs text-gray-60">대상</span>
+                    <span className="block text-xs text-gray-90">
+                      {schedule.target}
+                    </span>
+                  </div>
+                )}
 
-              <div>
-                <span className="block text-xs text-gray-60">장소</span>
-                <span className="block text-xs text-gray-90">
-                  {locationText}
-                </span>
-              </div>
+                {hasLocation && (
+                  <div>
+                    <span className="block text-xs text-gray-60">장소</span>
+                    <span className="block text-xs text-gray-90">
+                      {schedule.location}
+                    </span>
+                  </div>
+                )}
 
-              <div>
-                <span className="block text-xs text-gray-60">단과대</span>
-                <span className="block text-xs text-gray-90">
-                  {collegeText}
-                </span>
-              </div>
+                {hasCollege && (
+                  <div>
+                    <span className="block text-xs text-gray-60">단과대</span>
+                    <span className="block text-xs text-gray-90">
+                      {collegeName}
+                    </span>
+                  </div>
+                )}
 
-              <div>
-                <span className="block text-xs text-gray-60">지급일</span>
-                <span className="block text-xs text-gray-90">
-                  {paymentDateText}
-                </span>
-              </div>
+                {hasPaymentDate && (
+                  <div>
+                    <span className="block text-xs text-gray-60">지급일</span>
+                    <span className="block text-xs text-gray-90">
+                      {schedule.paymentDate}
+                    </span>
+                  </div>
+                )}
 
-              <div>
-                <span className="block text-xs text-gray-60">필수 문서</span>
-                <span className="block text-xs text-gray-90 whitespace-pre-line">
-                  {requiredDocsText}
-                </span>
+                {hasRequiredDocs && (
+                  <div>
+                    <span className="block text-xs text-gray-60">
+                      필수 문서
+                    </span>
+                    <span className="block text-xs text-gray-90 whitespace-pre-line">
+                      {schedule.requiredDocuments}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* 원본 링크 */}
         <section className="mb-2">
