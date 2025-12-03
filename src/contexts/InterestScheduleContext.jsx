@@ -1,13 +1,33 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import { MOCK_INTEREST_SCHEDULE_IDS } from "@/mocks/scheduleMocks";
 
 const InterestScheduleContext = createContext(null);
 
 export function InterestScheduleProvider({ children }) {
-  // 최초 값은 mock에서 가져오고, 이후로는 전역 상태로만 움직이게
-  const [interestedIds, setInterestedIds] = useState(
-    MOCK_INTEREST_SCHEDULE_IDS ?? []
-  );
+  // 최초 값: localStorage → 없으면 mock → 없으면 빈 배열
+  const [interestedIds, setInterestedIds] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem("interestScheduleIds");
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.warn("관심 일정 localStorage 파싱 실패", e);
+        }
+      }
+    }
+    return MOCK_INTEREST_SCHEDULE_IDS ?? [];
+  });
+
+  // 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        "interestScheduleIds",
+        JSON.stringify(interestedIds)
+      );
+    }
+  }, [interestedIds]);
 
   const toggleInterest = (scheduleId) => {
     setInterestedIds(
@@ -32,14 +52,4 @@ export function InterestScheduleProvider({ children }) {
       {children}
     </InterestScheduleContext.Provider>
   );
-}
-
-export function useInterestSchedules() {
-  const ctx = useContext(InterestScheduleContext);
-  if (!ctx) {
-    throw new Error(
-      "useInterestSchedules는 InterestScheduleProvider 안에서만 사용할 수 있습니다."
-    );
-  }
-  return ctx;
 }
