@@ -3,11 +3,9 @@ import { MOCK_SCHEDULES } from "@/mocks/scheduleMocks";
 import TodayScheduleSection from "../components/interest/TodaySchedulePanel";
 import UpcomingScheduleSection from "../components/interest/UpcomingScheduleSection";
 import ScheduleDetailModal from "../components/ScheduleDetailModal";
-import { useInterestSchedules } from "@/contexts/InterestScheduleContext";
+import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 
-// 목데이터 기준으로 보여줄 "오늘" 날짜 (중간고사 시작일에 맞춰둠)
-// 실제 서비스에서는 new Date()로 교체하면 됨.
-const MOCK_TODAY = new Date(2025, 8, 15); // 2025-09-15
+const TODAY = new Date();
 
 function parseScheduleDate(dateStr) {
   if (!dateStr) return null;
@@ -66,7 +64,7 @@ export default function InterestSchedulePage() {
 
   const { todaySchedules, upcomingSchedules } = splitSchedulesByDate(
     interestSchedules,
-    MOCK_TODAY
+    TODAY
   );
 
   // 상세 모달 상태
@@ -111,7 +109,7 @@ export default function InterestSchedulePage() {
         />
         <UpcomingScheduleSection
           schedules={upcomingSchedules}
-          baseDate={MOCK_TODAY}
+          baseDate={TODAY}
           onClickSchedule={handleOpenDetail}
         />
       </section>
