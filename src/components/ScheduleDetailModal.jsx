@@ -24,10 +24,10 @@ export default function ScheduleDetailModal({
     ? mainCategoryProps.textColor.replace("text-", "bg-")
     : "bg-main";
 
-  const rawStart = schedule.startDate;
-  const rawEnd = schedule.endDate;
+  const rawStart = schedule.startDate; // "2025-12-01T10:00:00"
+  const rawEnd = schedule.endDate; // "2025-12-01T18:00:00"
 
-  // 날짜가 "2025-12-01T..." 형식일 수도 있으니까 T 앞까지만 사용
+  // 1) 날짜 부분
   const startDateStr = rawStart ? rawStart.split("T")[0] : null;
   const endDateStr = rawEnd ? rawEnd.split("T")[0] : null;
 
@@ -39,6 +39,26 @@ export default function ScheduleDetailModal({
     period = `(당일) ${startDateStr}`;
   } else {
     period = `${startDateStr} ~ ${endDateStr}`;
+  }
+
+  // 2) 시간 부분 (LocalDateTime 기준)
+  let timeText = null;
+
+  if (rawStart || rawEnd) {
+    const [, startTimePart] = rawStart ? rawStart.split("T") : [];
+    const [, endTimePart] = rawEnd ? rawEnd.split("T") : [];
+
+    // "10:00:00.000" → "10:00"만 쓰고 싶어서 앞 5자리만 자름
+    const startTimeStr = startTimePart ? startTimePart.slice(0, 5) : null; // "HH:MM"
+    const endTimeStr = endTimePart ? endTimePart.slice(0, 5) : null;
+
+    if (startTimeStr && endTimeStr && startTimeStr !== endTimeStr) {
+      timeText = `시간: ${startTimeStr} ~ ${endTimeStr}`;
+    } else if (startTimeStr) {
+      timeText = `시간: ${startTimeStr}`;
+    } else if (endTimeStr) {
+      timeText = `종료 시간: ${endTimeStr}`;
+    }
   }
 
   // 단과대 이름 유틸 사용
@@ -99,6 +119,7 @@ export default function ScheduleDetailModal({
               {schedule.title}
             </p>
             <p className="text-xs text-gray-70">기간: {period}</p>
+            {timeText && <p className="text-xs text-gray-70">{timeText}</p>}
           </div>
         </div>
 
