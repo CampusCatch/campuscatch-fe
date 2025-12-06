@@ -194,8 +194,8 @@ export const MOCK_SCHEDULES = [
   {
     id: "my-1",
     title: "캡스톤 프로젝트 발표",
-    startDate: "2026-12-05T13:30:00",
-    endDate: "2026-12-05",
+    startDate: "2025-12-05T13:30:00",
+    endDate: "2025-12-05",
     categories: ["MY"],
     memo: "캡스톤 팀 발표",
     description:
