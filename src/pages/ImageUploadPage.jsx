@@ -5,6 +5,33 @@ import RecentUploadedSchedulesCard from "../components/image-upload/RecentUpload
 import ScheduleDetailModal from "../components/ScheduleDetailModal";
 import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 
+// TODO: 실제 OCR 응답 대신 사용하는 목데이터
+const MOCK_OCR_RESULT = {
+  title: "기초학력 증진프로그램",
+  category_id: 6,
+  start_date: "2025-12-01",
+  end_date: "2025-12-28",
+  location: "온라인 강의",
+  description:
+    "기초학력 증진프로그램이 2025년 12월 1일부터 12월 28일까지 진행됩니다. 수강료는 무료이며, 전공에 대한 자신감을 높일 수 있는 기회입니다. 추후 마일리지가 지급됩니다.",
+  college_id: null,
+  target: "세종대학교 재학생",
+  payment_date: null,
+  required_documents: null,
+};
+
+// 백엔드 category_id → 프론트 카테고리명 매핑 (임시)
+const CATEGORY_MAP = {
+  1: "학사",
+  2: "장학",
+  3: "취업",
+  4: "국제교류",
+  5: "근로/조교",
+  6: "MY",
+};
+
+const getCategoryLabel = (id) => CATEGORY_MAP[id] ?? "학사";
+
 const INITIAL_RECENT = [];
 
 export default function ImageUploadPage() {
@@ -12,6 +39,7 @@ export default function ImageUploadPage() {
   const [extractedData, setExtractedData] = useState(null);
   const [recentItems, setRecentItems] = useState(INITIAL_RECENT);
   const [formKey, setFormKey] = useState(0); // 저장 후 폼 리셋용
+  const [isLoading, setIsLoading] = useState(false); // 분석 로딩 상태
 
   // 전역 관심 상태 사용
   const { isInterested, toggleInterest } = useInterestSchedules();
@@ -37,14 +65,27 @@ export default function ImageUploadPage() {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(url);
 
-    // TODO: 실제 OCR / AI API 호출
-    // 일단은 파일명을 제목으로, 더미 날짜/카테고리 넣어둠
-    setExtractedData({
-      title: file.name.replace(/\.[^/.]+$/, ""),
-      startDate: "2025. 11. 26.",
-      endDate: "2025. 11. 28.",
-      category: "학사",
-    });
+    // 이전 결과 초기화 + 로딩 시작
+    setExtractedData(null);
+    setIsLoading(true);
+
+    // 🔥 3초 후에 목데이터 적용
+    setTimeout(() => {
+      setExtractedData({
+        // 파일 이름 대신 OCR 결과 title 사용
+        title: MOCK_OCR_RESULT.title,
+        // 백엔드 응답(start_date / end_date) → 그대로 문자열로 사용
+        startDate: MOCK_OCR_RESULT.start_date,
+        endDate: MOCK_OCR_RESULT.end_date,
+        // category_id → 카테고리명으로 변환
+        category: getCategoryLabel(MOCK_OCR_RESULT.category_id),
+        // 상세 설명
+        description: MOCK_OCR_RESULT.description,
+        // location, target 등은 지금 카드 폼에서 안쓰니까 일단 생략
+      });
+
+      setIsLoading(false);
+    }, 3000);
   };
 
   // 추출된 일정 정보 카드에서 "일정 저장" 눌렀을 때
@@ -147,11 +188,21 @@ export default function ImageUploadPage() {
           previewUrl={previewUrl}
           className="w-full"
         />
-        <ExtractedScheduleCard
-          key={formKey}
-          extractedData={extractedData}
-          onSave={handleSaveSchedule}
-        />
+        <div className="w-full">
+          {isLoading && (
+            <div className="w-full h-full min-h-[180px] rounded-2xl border border-gray-20 bg-white shadow-sm flex items-center justify-center text-sm text-gray-70">
+              이미지를 분석하고 있어요... ⏳
+            </div>
+          )}
+
+          {!isLoading && (
+            <ExtractedScheduleCard
+              key={formKey}
+              extractedData={extractedData}
+              onSave={handleSaveSchedule}
+            />
+          )}
+        </div>
       </section>
 
       {/* 최근 업로드한 일정 */}
