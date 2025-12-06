@@ -1,12 +1,20 @@
 import ScheduleCard from "../ScheduleCard";
 import { getCategoryChipProps } from "../../utils/scheduleChipUtils";
 
+// "2024.09.20." / "2024-09-20" / "2024-09-20T09:00:00" 모두 대응
 function parseDotDate(dateStr) {
-  // "2024.09.20." / "2024.09.20" 둘 다 대응
   if (!dateStr) return null;
-  const cleaned = dateStr.replace(/\s/g, "").replace(/\.$/, "");
-  const [year, month, day] = cleaned.split(".").map((v) => Number(v));
+
+  // 숫자만 남기기 → "20240920", "20240920090000" 등
+  const cleaned = String(dateStr).replace(/[^\d]/g, "");
+  if (cleaned.length < 8) return null;
+
+  const year = Number(cleaned.slice(0, 4));
+  const month = Number(cleaned.slice(4, 6));
+  const day = Number(cleaned.slice(6, 8));
+
   if (!year || !month || !day) return null;
+
   return new Date(year, month - 1, day);
 }
 

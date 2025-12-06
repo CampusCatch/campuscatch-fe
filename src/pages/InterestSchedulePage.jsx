@@ -7,14 +7,20 @@ import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 
 const TODAY = new Date();
 
+// "2025-12-02" / "2025-12-02T09:00:00" / "2025.12.02" 모두 대응
 function parseScheduleDate(dateStr) {
   if (!dateStr) return null;
-  // "2025-12-02" 기준
-  const [yearStr, monthStr, dayStr] = dateStr.split("-");
-  const year = Number(yearStr);
-  const month = Number(monthStr);
-  const day = Number(dayStr);
+
+  // 숫자만 남기기 → "20251202", "20251202090000" 등
+  const cleaned = String(dateStr).replace(/[^\d]/g, "");
+  if (cleaned.length < 8) return null;
+
+  const year = Number(cleaned.slice(0, 4));
+  const month = Number(cleaned.slice(4, 6));
+  const day = Number(cleaned.slice(6, 8));
+
   if (!year || !month || !day) return null;
+
   return new Date(year, month - 1, day);
 }
 

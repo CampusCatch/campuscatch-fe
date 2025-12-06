@@ -43,10 +43,14 @@ const CATEGORY_STYLE = {
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
-// "2025-11-15" 형태 문자열 -> Date
+// "2025-11-15" 또는 "2025-11-15T09:00:00" 형태 문자열 -> Date
 function parseYmdDate(ymdString) {
   if (!ymdString) return null;
-  const [yearStr, monthStr, dayStr] = ymdString.split("-");
+
+  // LocalDateTime일 때는 T 앞까지만 날짜로 사용
+  const [yearStr, monthStr, dayStr] = String(ymdString)
+    .split("T")[0]
+    .split("-");
   const year = Number(yearStr);
   const month = Number(monthStr);
   const day = Number(dayStr);

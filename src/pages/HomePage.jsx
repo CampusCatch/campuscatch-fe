@@ -10,7 +10,10 @@ import { useInterestSchedules } from "@/hooks/useInterestSchedules";
 // "2025-09-15" 형태 문자열 -> Date
 function parseYmdDate(ymdString) {
   if (!ymdString) return null;
-  const [yearStr, monthStr, dayStr] = ymdString.split("-");
+  // LocalDateTime일 때는 T 앞까지만 날짜로 사용
+  const [yearStr, monthStr, dayStr] = String(ymdString)
+    .split("T")[0]
+    .split("-");
   const year = Number(yearStr);
   const month = Number(monthStr);
   const day = Number(dayStr);
